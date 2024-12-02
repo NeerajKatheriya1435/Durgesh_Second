@@ -5,8 +5,6 @@ import PropTypes from 'prop-types'
 
 export class NewsMain extends Component {
 
-
-
     totalNews = []
     constructor() {
         super();
@@ -21,7 +19,7 @@ export class NewsMain extends Component {
         this.setState({
             laoding: true
         })
-        const data = await fetch(`https://newsapi.org/v2/top-headlines?country=us&apiKey=f6e9b5eb495049f2a2c81bd02fede1d8&category=${this.props.category}&page=1&pageSize=${this.props.pageSize}`);
+        const data = await fetch(`https://newsapi.org/v2/top-headlines?country=${this.props.country}&apiKey=f6e9b5eb495049f2a2c81bd02fede1d8&category=${this.props.category}&page=1&pageSize=${this.props.pageSize}`);
         const parsedJsonOfData = await data.json();
         this.setState({
             totalNews: parsedJsonOfData.articles,
@@ -38,7 +36,7 @@ export class NewsMain extends Component {
                 this.setState({
                     laoding: true
                 })
-                const data = await fetch(`https://newsapi.org/v2/top-headlines?country=us&apiKey=f6e9b5eb495049f2a2c81bd02fede1d8&category=${this.props.category}&page=${this.state.page + 1}&pageSize=${this.props.pageSize}`);
+                const data = await fetch(`https://newsapi.org/v2/top-headlines?country=${this.props.country}&apiKey=f6e9b5eb495049f2a2c81bd02fede1d8&category=${this.props.category}&page=${this.state.page + 1}&pageSize=${this.props.pageSize}`);
                 const parsedJsonOfData = await data.json();
                 this.setState({
                     page: this.state.page + 1,
@@ -52,7 +50,7 @@ export class NewsMain extends Component {
             this.setState({
                 laoding: true
             })
-            const data = await fetch(`https://newsapi.org/v2/top-headlines?country=us&apiKey=f6e9b5eb495049f2a2c81bd02fede1d8&category=${this.props.category}&page=${this.state.page - 1}&pageSize=${this.props.pageSize}`);
+            const data = await fetch(`https://newsapi.org/v2/top-headlines?country=${this.props.country}&apiKey=f6e9b5eb495049f2a2c81bd02fede1d8&category=${this.props.category}&page=${this.state.page - 1}&pageSize=${this.props.pageSize}`);
             const parsedJsonOfData = await data.json();
             this.setState({
                 page: this.state.page - 1,
@@ -69,7 +67,8 @@ export class NewsMain extends Component {
                 <div className="row my-4">
                     {!this.state.laoding && this.state.totalNews.map((element) => {
                         return <div className="col-md-4" key={element.urlToImage ? element.urlToImage : element.publishedAt}>
-                            <NewsItem title={element.title} description={element.description} urlToImage={element.urlToImage} />
+                            <NewsItem title={element.title} description={element.description} urlToImage={element.urlToImage} url={element.url} author={element.author} publishedAt={element.publishedAt}
+                                source={element.source.name} />
                         </div>
                     })}
                 </div>
@@ -83,10 +82,12 @@ export class NewsMain extends Component {
 }
 
 NewsMain.defaultProps = {
+    country: "is",
     pageSize: 10,
     category: "general"
 };
 NewsMain.propTypes = {
+    country: PropTypes.string,
     pageSize: PropTypes.number,
     category: PropTypes.string,
 }
