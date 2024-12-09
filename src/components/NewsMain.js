@@ -4,64 +4,59 @@ import Spinner from './Spinner';
 import PropTypes from 'prop-types'
 
 export class NewsMain extends Component {
-
+    capitalizeFirstLetter(val) {
+        return String(val).charAt(0).toUpperCase() + String(val).slice(1);
+    }
     totalNews = []
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.state = {
             totalNews: this.totalNews,
             page: 1,
             laoding: false
         }
+        document.title = `${this.capitalizeFirstLetter(this.props.category)} - News`
     }
-
-    async componentDidMount() {
+    async renderAfterFetch() {
+        this.props.setProgress(20)
         this.setState({
             laoding: true
         })
-        const data = await fetch(`https://newsapi.org/v2/top-headlines?country=${this.props.country}&apiKey=f6e9b5eb495049f2a2c81bd02fede1d8&category=${this.props.category}&page=1&pageSize=${this.props.pageSize}`);
+        const data = await fetch(`https://newsapi.org/v2/top-headlines?country=${this.props.country}&apiKey=f6e9b5eb495049f2a2c81bd02fede1d8&category=${this.props.category}&page=${this.state.page}&pageSize=${this.props.pageSize}`);
+        this.props.setProgress(40)
         const parsedJsonOfData = await data.json();
+        this.props.setProgress(70)
         this.setState({
             totalNews: parsedJsonOfData.articles,
             totalResults: parsedJsonOfData.totalResults,
             laoding: false
         })
+        this.props.setProgress(100)
+    }
+
+    async componentDidMount() {
+        this.renderAfterFetch()
 
     }
 
     render() {
         const handleNext = async () => {
-
-            if (!(this.state.page + 1 > Math.ceil(this.state.totalResults / this.props.pageSize))) {
-                this.setState({
-                    laoding: true
-                })
-                const data = await fetch(`https://newsapi.org/v2/top-headlines?country=${this.props.country}&apiKey=f6e9b5eb495049f2a2c81bd02fede1d8&category=${this.props.category}&page=${this.state.page + 1}&pageSize=${this.props.pageSize}`);
-                const parsedJsonOfData = await data.json();
-                this.setState({
-                    page: this.state.page + 1,
-                    totalNews: parsedJsonOfData.articles,
-                    laoding: false
-                })
-            }
+            this.setState({
+                page: this.state.page + 1
+            })
+            this.renderAfterFetch();
 
         }
         const handlePrevious = async () => {
             this.setState({
-                laoding: true
+                page: this.state.page - 1
             })
-            const data = await fetch(`https://newsapi.org/v2/top-headlines?country=${this.props.country}&apiKey=f6e9b5eb495049f2a2c81bd02fede1d8&category=${this.props.category}&page=${this.state.page - 1}&pageSize=${this.props.pageSize}`);
-            const parsedJsonOfData = await data.json();
-            this.setState({
-                page: this.state.page - 1,
-                totalNews: parsedJsonOfData.articles,
-                laoding: false
-            })
+            this.renderAfterFetch();
         }
         return (
             <div className='container'>
                 <h3 className="text-center my-2">
-                    Durgesh News Website - Daily Updates
+                    {`Durgesh News Website - Daily Updates on ${this.capitalizeFirstLetter(this.props.category)}`}
                 </h3>
                 {this.state.laoding && <Spinner />}
                 <div className="row my-4">

@@ -15,7 +15,7 @@ export class NewsItem extends Component {
                         <h5 className="card-title">{title}</h5>
                         <p className="card-text">{description}</p>
                         <small style={{ display: 'block' }} class="text-muted">By {author} on {new Date(publishedAt).toLocaleString()}</small>
-                        <a href={url} target='_blank' className="btn btn-primary my-2">Read More</a>
+                        <a href={url} rel="noreferrer" target='_blank' className="btn btn-primary my-2">Read More</a>
                     </div>
                 </div>
 
